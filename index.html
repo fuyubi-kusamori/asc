@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>asc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:wght@100;200;300&family=Noto+Sans+JP:wght@100&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+html {
+margin: 0;
+padding: 0;
+}
+
+body {
+margin: 0;
+padding: 0;
+font-family: "Noto Sans JP", sans-serif;
+font-size: 15px;
+letter-spacing: 3px;
+color: #666;
+line-height: 20px;
+text-align: center;
+}
+
+p{
+margin: 10px auto 20px;
+}
+
+#conversion_wrapper{
+height: 720px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+
+input[type="file"] {
+display: none;
+}
+
+#raw-result {
+display: none;
+}
+
+textarea {
+margin: 0 auto;
+min-height: 300px;
+min-width: 300px;
+max-height: 500px;
+max-width: 500px;
+border-radius: 0.5em;
+font-family: consolas, monospace;
+}
+
+.button {
+margin: 12px auto 0;
+cursor: pointer;
+font-family: "Josefin Slab", serif !important;
+font-size: 15px;
+letter-spacing: 3px;
+text-transform: capitalize;
+padding: 10px 20px;
+color: #fff;
+border: 2px solid #fff;
+border-radius: 0px;
+background-image: -webkit-gradient(linear, left top, right top, from(#fa709a), to(#fee140));
+background-image: -webkit-linear-gradient(left, #fa709a 0%, #fee140 100%);
+background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+}
+
+.hidden {
+display: none;
+}
+</style>
+
+<script>
+function replaceFullToHalf(str) {
+return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+});
+}
+
+function handleFileUpload(event) {
+const file = event.target.files[0];
+if (!file) {
+alert('ファイルを選択してください。');
+return;
+}
+
+const reader = new FileReader();
+reader.onload = function(e) {
+const content = e.target.result;
+const convertedContent = replaceFullToHalf(content);
+document.getElementById('conversion').value = convertedContent;
+document.getElementById('downloadButton').style.display = 'inline-block';
+document.getElementById('uploadButton').style.display = 'none';
+};
+reader.readAsText(file);
+}
+
+function downloadConvertedFile() {
+const content = document.getElementById('conversion').value;
+const element = document.createElement('a');
+element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+element.setAttribute('download', 'converted.txt');
+
+document.body.appendChild(element);
+element.click();
+document.body.removeChild(element);
+}
+
+function triggerFileInput() {
+document.getElementById('fileInput').click();
+}
+</script>
+</head>
+<body>
+<div id="conversion_wrapper">
+<p for="conversion">全角英数字 → 半角英数字</p>
+<textarea id="conversion"></textarea>
+<a class="button" id="uploadButton" onclick="triggerFileInput()">Upload</a>
+<a class="button hidden" id="downloadButton" onclick="downloadConvertedFile()">Download</a>
+<input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
+</p>
+</div>
+</body>
+</html>
